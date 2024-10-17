@@ -73,6 +73,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text.rich(
                           TextSpan(
@@ -101,7 +102,7 @@ class ProfilePage extends StatelessWidget {
                         Image.network(
                           "https://static.vecteezy.com/system/resources/previews/034/950/530/non_2x/ai-generated-small-house-with-flowers-on-transparent-background-image-png.png",
                           height: 140,
-                          width: 138,
+                          width: 135,
                         ),
                       ],
                     ),

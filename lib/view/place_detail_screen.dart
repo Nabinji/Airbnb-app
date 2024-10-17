@@ -402,16 +402,19 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ),
         ),
         Positioned(
-          top: 10,
+          top: 25,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
               children: [
                 GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const MyIconButton(icon: Icons.arrow_back_ios_new)),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const MyIconButton(
+                    icon: Icons.arrow_back_ios_new,
+                  ),
+                ),
                 SizedBox(width: size.width * 0.55),
                 const MyIconButton(icon: Icons.share_outlined),
                 const SizedBox(width: 20),

@@ -39,6 +39,8 @@ dependencies:
   google_maps_flutter: ^2.9.0
   another_carousel_pro: ^1.0.2
   custom_info_window: ^1.0.1
+  firebase_core: ^3.6.0
+  cloud_firestore: ^5.4.4
   
   
 dev_dependencies:

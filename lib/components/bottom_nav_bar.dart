@@ -1,5 +1,7 @@
 import 'package:airbnb_app_ui/view/explore_screen.dart';
+import 'package:airbnb_app_ui/view/messages.dart';
 import 'package:airbnb_app_ui/view/profile_page.dart';
+import 'package:airbnb_app_ui/view/wishlists.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -16,9 +18,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
   void initState() {
     page = [
       const ExploreScreen(),
-      navBarPage(Icons.favorite),
+      const Wishlists(),
       navBarPage(Icons.attribution),
-      navBarPage(Icons.chat),
+      const Messages(),
       const ProfilePage(),
     ];
     super.initState();

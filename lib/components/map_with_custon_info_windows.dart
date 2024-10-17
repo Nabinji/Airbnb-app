@@ -38,6 +38,7 @@ class _MapWithCustonInfoWindowsState extends State<MapWithCustonInfoWindows> {
 
     // Iterate over the list of places and add markers
 
+    // ignore: use_build_context_synchronously
     Size size = MediaQuery.of(context).size;
 
     for (var place in listOfPlace) {

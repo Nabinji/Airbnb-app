@@ -1,3 +1,19 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<void> savePlacesToFirebase() async {
+  final CollectionReference ref =
+      FirebaseFirestore.instance.collection("myAppCpollection");
+  for (final Place place in listOfPlace) {
+    final String id =
+        DateTime.now().toIso8601String() + Random().nextInt(1000).toString();
+    ref.doc("das");
+    await ref.doc(id).set(place.toMap());
+  }
+}
+
 class Place {
   final String title;
   bool isActive;
@@ -33,6 +49,27 @@ class Place {
       required this.latitude,
       required this.longitude,
       required this.imageUrls});
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'title': title,
+      'isActive': isActive,
+      'image': image,
+      'rating': rating,
+      'date': date,
+      'price': price,
+      'address': address,
+      'vendor': vendor,
+      'vendorProfession': vendorProfession,
+      'vendorProfile': vendorProfile,
+      'review': review,
+      'bedAndBathroom': bedAndBathroom,
+      'yearOfHostin': yearOfHostin,
+      'latitude': latitude,
+      'longitude': longitude,
+      'imageUrls': imageUrls,
+    };
+  }
 }
 
 final List<Place> listOfPlace = [
