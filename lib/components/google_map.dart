@@ -1,9 +1,9 @@
-import 'package:airbnb_app_ui/model/place_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapFlutter extends StatefulWidget {
-  final Place place;
+  final DocumentSnapshot<Object?> place;
   const GoogleMapFlutter({super.key, required this.place});
 
   @override
@@ -21,10 +21,10 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       myLocationButtonEnabled: false,
       markers: {
         Marker(
-          markerId: MarkerId(widget.place.address),
+          markerId: MarkerId(widget.place['address']),
           position: LatLng(
-            widget.place.latitude,
-            widget.place.longitude,
+            widget.place['latitude'],
+            widget.place['longitude'],
           ),
         )
       },
@@ -32,8 +32,8 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       // Initial camera position of the map
       initialCameraPosition: CameraPosition(
         target: LatLng(
-          widget.place.latitude,
-          widget.place.longitude,
+          widget.place['latitude'],
+          widget.place['longitude'],
         ),
         zoom: 13,
       ),

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -36,17 +37,20 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 25),
                 Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 35,
                       backgroundColor: Colors.black54,
-                      child: Icon(Icons.person, size: 50),
+                      backgroundImage: NetworkImage(
+                          "${FirebaseAuth.instance.currentUser!.photoURL}"),
                     ),
                     SizedBox(width: size.width * 0.06),
-                    const Text.rich(
+                    Text.rich(
                       TextSpan(
-                        text: "Nabin\n",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                        children: [
+                        text:
+                            "${FirebaseAuth.instance.currentUser!.displayName}\n",
+                        style:
+                            const TextStyle(fontSize: 20, color: Colors.black),
+                        children: const [
                           TextSpan(
                             text: "Show profile",
                             style: TextStyle(
@@ -166,7 +170,7 @@ class ProfilePage extends StatelessWidget {
                 profileInfo(Icons.menu_book_outlined, "Terms of Service"),
                 profileInfo(Icons.menu_book_outlined, "Privacy Policy"),
                 profileInfo(Icons.menu_book_outlined, "Open source licenses"),
-                 const SizedBox(height: 10),
+                const SizedBox(height: 10),
                 const Text(
                   "Log out",
                   style: TextStyle(

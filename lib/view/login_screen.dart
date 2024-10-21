@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../components/bottom_nav_bar.dart';
+import '../Authentication/google_auth.dart';
+import '../components/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -69,12 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: size.height * 0.03),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const BottomNavBar(),
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (_) => const BottomNavBar(),
+                        //   ),
+                        // );
                       },
                       child: Container(
                         width: size.width,
@@ -127,12 +128,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       Colors.blue,
                       30,
                     ),
-                    sociaIcons(
-                      size,
-                      FontAwesomeIcons.google,
-                      "Continue with Google",
-                      Colors.pink,
-                      27,
+                    GestureDetector(
+                      onTap: () async {
+                        await FirebaseServices().signInWithGoogle();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AppMainScreen(),
+                          ),
+                        );
+                      },
+                      child: sociaIcons(
+                        size,
+                        FontAwesomeIcons.google,
+                        "Continue with Google",
+                        Colors.pink,
+                        27,
+                      ),
                     ),
                     sociaIcons(
                       size,

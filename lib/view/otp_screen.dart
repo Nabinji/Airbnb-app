@@ -1,4 +1,4 @@
-import 'package:airbnb_app_ui/components/bottom_nav_bar.dart';
+import 'package:airbnb_app_ui/components/main_screen.dart';
 import 'package:flutter/material.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -76,7 +76,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const BottomNavBar(),
+                        builder: (_) => const AppMainScreen(),
                       ),
                     );
                   },

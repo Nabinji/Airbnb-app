@@ -4,13 +4,13 @@ import 'package:airbnb_app_ui/view/profile_page.dart';
 import 'package:airbnb_app_ui/view/wishlists.dart';
 import 'package:flutter/material.dart';
 
-class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+class AppMainScreen extends StatefulWidget {
+  const AppMainScreen({super.key});
   @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
+  State<AppMainScreen> createState() => _AppMainScreenState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _AppMainScreenState extends State<AppMainScreen> {
   int selectedIndex = 0;
   late final List<Widget> page;
 

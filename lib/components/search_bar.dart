@@ -41,13 +41,29 @@ class SearchBarAndFilter extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Where to?",
+                          "  Where to?",
                           style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 16),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
                         ),
-                        Text(
-                          "Anywhere . Any week . Add guests",
-                          style: TextStyle(color: Colors.black38, fontSize: 13),
+                        SizedBox(
+                          height: 20,
+                          width: 240,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              hintText: "Anywhere . Any week . Add guests",
+                              hintStyle: TextStyle(
+                                color: Colors.black38,
+                                fontSize: 13,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
                         ),
                       ],
                     )

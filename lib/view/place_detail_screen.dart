@@ -1,12 +1,14 @@
+import 'package:airbnb_app_ui/Provider/favorite_provider.dart';
 import 'package:airbnb_app_ui/components/google_map.dart';
 import 'package:airbnb_app_ui/components/icon_button.dart';
 import 'package:airbnb_app_ui/components/star_rating.dart';
-import 'package:airbnb_app_ui/model/place_model.dart';
+
 import 'package:another_carousel_pro/another_carousel_pro.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
-  final Place place;
+  final DocumentSnapshot<Object?> place;
   const PlaceDetailScreen({super.key, required this.place});
 
   @override
@@ -19,6 +21,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final provider = FavoriteProvider.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -26,7 +29,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            imageAndIcons(size, context),
+            imageAndIcons(size, context, provider),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 25,
@@ -36,7 +39,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.place.title,
+                    widget.place['title'],
                     maxLines: 2,
                     style: const TextStyle(
                         fontSize: 25,
@@ -46,14 +49,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   ),
                   SizedBox(height: size.height * 0.02),
                   Text(
-                    "Room in ${widget.place.address}",
+                    "Room in ${widget.place['address']}",
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   Text(
-                    widget.place.bedAndBathroom,
+                    widget.place['bedAndBathroom'],
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w400,
@@ -62,7 +65,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 ],
               ),
             ),
-            widget.place.isActive == true
+            widget.place['isActive'] == true
                 ? ratingAndStar()
                 : ratingAndStarFalse(),
             SizedBox(
@@ -78,14 +81,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     size,
                     "https://static.vecteezy.com/system/resources/previews/018/923/486/original/diamond-symbol-icon-png.png",
                     "This is a rare find",
-                    "${widget.place.vendor}'s place is usually fully booked.",
+                    "${widget.place['vendor']}'s place is usually fully booked.",
                   ),
                   const Divider(),
                   propertyList(
                     size,
-                    widget.place.vendorProfile,
-                    "Stay with ${widget.place.vendor}",
-                    "Superhost . ${widget.place.yearOfHostin} years hosting",
+                    widget.place['vendorProfile'],
+                    "Stay with ${widget.place['vendor']}",
+                    "Superhost . ${widget.place['yearOfHostin']} years hosting",
                   ),
                   const Divider(),
                   propertyList(
@@ -124,7 +127,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     ),
                   ),
                   Text(
-                    widget.place.address,
+                    widget.place['address'],
                     style: const TextStyle(fontSize: 18),
                   ),
                   SizedBox(
@@ -160,7 +163,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             children: [
               RichText(
                 text: TextSpan(
-                  text: "\$${widget.place.price} ",
+                  text: "\$${widget.place['price']} ",
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -179,7 +182,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 ),
               ),
               Text(
-                widget.place.date,
+                widget.place['date'],
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -265,18 +268,19 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           const Icon(Icons.star),
           const SizedBox(width: 5),
           Text(
-            "${widget.place.rating.toString()} . ",
+            "${widget.place['rating'].toString()} . ",
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
-            "${widget.place.review.toString()}reviews",
+            "${widget.place['review'].toString()}reviews",
             style: const TextStyle(
-                fontSize: 17,
-                decoration: TextDecoration.underline,
-                fontWeight: FontWeight.w500),
+              fontSize: 17,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+            ),
           )
         ],
       ),
@@ -305,7 +309,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           Column(
             children: [
               Text(
-                widget.place.rating.toString(),
+                widget.place['rating'].toString(),
                 style: const TextStyle(
                   height: 1,
                   fontWeight: FontWeight.bold,
@@ -313,7 +317,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 ),
               ),
               StarRating(
-                rating: widget.place.rating.toDouble(),
+                rating: widget.place['rating'].toDouble(),
               )
             ],
           ),
@@ -342,7 +346,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           Column(
             children: [
               Text(
-                widget.place.review.toString(),
+                widget.place['review'].toString(),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 17,
@@ -363,15 +367,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
-  Stack imageAndIcons(Size size, BuildContext context) {
-    final int totalSlides = widget.place.imageUrls.length;
+  Stack imageAndIcons(Size size, BuildContext context, provider) {
+    final int totalSlides = widget.place['imageUrls'].length;
     return Stack(
       children: [
         SizedBox(
           height: size.height * 0.35,
           child: AnotherCarousel(
-            images:
-                widget.place.imageUrls.map((url) => NetworkImage(url)).toList(),
+            images: widget.place['imageUrls']
+                .map((url) => NetworkImage(url))
+                .toList(),
             showIndicator: false, // Hide the default dot indicator
             dotBgColor: Colors.transparent,
             onImageChange: (previousIndex, currentIndex) {
@@ -402,10 +407,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ),
         ),
         Positioned(
+          right: 0,
+          left: 0,
           top: 25,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -418,7 +426,19 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 SizedBox(width: size.width * 0.55),
                 const MyIconButton(icon: Icons.share_outlined),
                 const SizedBox(width: 20),
-                const MyIconButton(icon: Icons.favorite_border),
+                InkWell(
+                  onTap: () {
+                    provider.toggleFavorite(widget.place);
+                  },
+                  child: MyIconButton(
+                    icon: provider.isExist(widget.place)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    iconColor: provider.isExist(widget.place)
+                        ? Colors.red
+                        : Colors.black,
+                  ),
+                ),
               ],
             ),
           ),

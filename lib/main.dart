@@ -1,7 +1,11 @@
-import 'package:airbnb_app_ui/model/category.dart';
 import 'package:airbnb_app_ui/view/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'Provider/favorite_provider.dart';
+import 'components/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,25 +18,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
-    );
-  }
-}
-
-class UploadData extends StatelessWidget {
-  const UploadData({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            saveCategoryItems();
+    return MultiProvider(
+      providers: [
+        // for favorite provider
+        ChangeNotifierProvider(
+          create: (_) => FavoriteProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return const AppMainScreen();
+            } else {
+              return const LoginScreen();
+            }
           },
-          child: const Text("Upload"),
         ),
       ),
     );

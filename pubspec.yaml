@@ -41,6 +41,9 @@ dependencies:
   custom_info_window: ^1.0.1
   firebase_core: ^3.6.0
   cloud_firestore: ^5.4.4
+  firebase_auth: ^5.3.1
+  google_sign_in: ^6.2.1
+  provider: ^6.1.2
   
   
 dev_dependencies:

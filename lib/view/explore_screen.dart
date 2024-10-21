@@ -1,10 +1,10 @@
+import 'package:airbnb_app_ui/Provider/favorite_provider.dart';
 import 'package:airbnb_app_ui/components/map_with_custon_info_windows.dart';
 import 'package:another_carousel_pro/another_carousel_pro.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:airbnb_app_ui/model/place_model.dart';
 import 'package:airbnb_app_ui/view/place_detail_screen.dart';
 import '../components/search_bar.dart';
-import '../model/category.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -16,10 +16,17 @@ class ExploreScreen extends StatefulWidget {
 class _ExploreScreenState extends State<ExploreScreen> {
   int selectedIndex = 0;
   bool _isSwitched = false;
+  // collection for place detail
+  final CollectionReference placeCollection =
+      FirebaseFirestore.instance.collection("myAppCpollection");
+  // collection for category
+  final CollectionReference categoryCollection =
+      FirebaseFirestore.instance.collection("AppCategory");
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final provider = FavoriteProvider.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -27,7 +34,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         child: Column(
           children: [
             const SearchBarAndFilter(),
-            categoryItems(size),
+            listOfCategoryItems(size),
             Expanded(
               child: SizedBox(
                 child: SingleChildScrollView(
@@ -35,160 +42,192 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     children: [
                       displayTotalPrice(),
                       const SizedBox(height: 15),
-                      ListView.builder(
-                        padding: EdgeInsets.zero,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: listOfPlace.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final place = listOfPlace[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        PlaceDetailScreen(place: place),
-                                  ),
-                                );
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(15),
-                                        child: SizedBox(
-                                          height: 360,
-                                          width: double.infinity,
-                                          child: AnotherCarousel(
-                                            images: place.imageUrls
-                                                .map((url) => NetworkImage(url))
-                                                .toList(),
-                                            dotSize: 6,
-                                            indicatorBgPadding: 5.0,
-                                            dotBgColor: Colors.transparent,
-                                          ),
+                      StreamBuilder(
+                        stream: placeCollection.snapshots(),
+                        builder: (context, streamSnaphot) {
+                          if (streamSnaphot.hasData) {
+                            return ListView.builder(
+                              padding: EdgeInsets.zero,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: streamSnaphot.data!.docs.length,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                final place = streamSnaphot.data!.docs[index];
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              PlaceDetailScreen(place: place),
                                         ),
-                                      ),
-                                      Positioned(
-                                        top: 20,
-                                        left: 15,
-                                        right: 15,
-                                        child: Row(
+                                      );
+                                    },
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Stack(
                                           children: [
-                                            place.isActive == true
-                                                ? Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        40,
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              child: SizedBox(
+                                                height: 360,
+                                                width: double.infinity,
+                                                child: AnotherCarousel(
+                                                  images: place['imageUrls']
+                                                      .map((url) =>
+                                                          NetworkImage(url))
+                                                      .toList(),
+                                                  dotSize: 6,
+                                                  indicatorBgPadding: 5.0,
+                                                  dotBgColor:
+                                                      Colors.transparent,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 20,
+                                              left: 15,
+                                              right: 15,
+                                              child: Row(
+                                                children: [
+                                                  place['isActive'] == true
+                                                      ? Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                              40,
+                                                            ),
+                                                          ),
+                                                          child: const Padding(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                              horizontal: 15,
+                                                              vertical: 5,
+                                                            ),
+                                                            child: Text(
+                                                              "Guest favorite",
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : SizedBox(
+                                                          width:
+                                                              size.width * 0.3,
+                                                        ),
+                                                  const Spacer(),
+                                                  Stack(
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                      // White border
+                                                      const Icon(
+                                                        Icons
+                                                            .favorite_outline_rounded,
+                                                        size: 34.0,
+                                                        color: Colors.white,
                                                       ),
-                                                    ),
-                                                    child: const Padding(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                        horizontal: 15,
-                                                        vertical: 5,
-                                                      ),
-                                                      child: Text(
-                                                        "Guest favorite",
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                      InkWell(
+                                                        onTap: () {
+                                                          provider
+                                                              .toggleFavorite(
+                                                            place,
+                                                          );
+                                                        },
+                                                        child: Icon(
+                                                          Icons.favorite,
+                                                          size: 30.0,
+                                                          color: provider
+                                                                  .isExist(
+                                                            place,
+                                                          )
+                                                              ? Colors.red
+                                                              : Colors.black54,
                                                         ),
                                                       ),
-                                                    ),
-                                                  )
-                                                : SizedBox(
-                                                    width: size.width * 0.3,
+                                                    ],
                                                   ),
+                                                ],
+                                              ),
+                                            ),
+                                            vendorProfile(place)
+                                          ],
+                                        ),
+                                        SizedBox(height: size.height * 0.01),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              place['address'],
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black,
+                                              ),
+                                            ),
                                             const Spacer(),
-                                            const Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                // White border
-                                                Icon(
-                                                  Icons
-                                                      .favorite_outline_rounded,
-                                                  size: 34.0,
-                                                  color: Colors.white,
-                                                ),
-                                                Icon(
-                                                  Icons.favorite,
-                                                  size: 30.0,
-                                                  color: Colors.black54,
-                                                ),
-                                              ],
+                                            const Icon(Icons.star),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              place['rating'].toString(),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      vendorProfile(place),
-                                    ],
-                                  ),
-                                  SizedBox(height: size.height * 0.01),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        place.address,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      const Icon(Icons.star),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        place.rating.toString(),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    "Stay with ${place.vendor} . ${place.vendorProfession}",
-                                    style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontSize: 16.5,
-                                    ),
-                                  ),
-                                  Text(
-                                    place.date,
-                                    style: const TextStyle(
-                                      fontSize: 16.5,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                  SizedBox(height: size.height * 0.007),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: "\$${place.price} ",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                      ),
-                                      children: const <TextSpan>[
-                                        TextSpan(
-                                          text: "night",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.normal,
+                                        Text(
+                                          "Stay with ${place['vendor']} . ${place['vendorProfession']}",
+                                          style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 16.5,
                                           ),
                                         ),
+                                        Text(
+                                          place['date'],
+                                          style: const TextStyle(
+                                            fontSize: 16.5,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        SizedBox(height: size.height * 0.007),
+                                        RichText(
+                                          text: TextSpan(
+                                            text: "\$${place['price']} ",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                            ),
+                                            children: const <TextSpan>[
+                                              TextSpan(
+                                                text: "night",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: size.height * 0.04),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: size.height * 0.04),
-                                ],
-                              ),
-                            ),
+                                );
+                              },
+                            );
+                          }
+                          return const Center(
+                            child: CircularProgressIndicator(),
                           );
                         },
                       ),
@@ -205,7 +244,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  Positioned vendorProfile(Place place) {
+  Positioned vendorProfile(QueryDocumentSnapshot<Object?> place) {
     return Positioned(
       bottom: 11,
       left: 10,
@@ -227,11 +266,99 @@ class _ExploreScreenState extends State<ExploreScreen> {
             top: 10,
             left: 10,
             child: CircleAvatar(
-              backgroundImage: NetworkImage(place.vendorProfile),
+              backgroundImage: NetworkImage(place['vendorProfile']),
             ),
           )
         ],
       ),
+    );
+  }
+
+  StreamBuilder<QuerySnapshot<Object?>> listOfCategoryItems(Size size) {
+    return StreamBuilder(
+      stream: categoryCollection.snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+        if (streamSnapshot.hasData) {
+          return Stack(
+            children: [
+              const Positioned(
+                left: 0,
+                right: 0,
+                top: 80,
+                child: Divider(
+                  color: Colors.black12,
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.12,
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: streamSnapshot.data!.docs.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = index;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                          top: 20,
+                          right: 20,
+                          left: 20,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 32,
+                              width: 40,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                              ),
+                              child: Image.network(
+                                streamSnapshot.data!.docs[index]['image'],
+                                color: selectedIndex == index
+                                    ? Colors.black
+                                    : Colors.black45,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              streamSnapshot.data!.docs[index]['title'],
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: selectedIndex == index
+                                    ? Colors.black
+                                    : Colors.black45,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              height: 3,
+                              width: 50,
+                              color: selectedIndex == index
+                                  ? Colors.black
+                                  : Colors.transparent,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 
@@ -286,84 +413,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Stack categoryItems(Size size) {
-    return Stack(
-      children: [
-        const Positioned(
-          left: 0,
-          right: 0,
-          top: 80,
-          child: Divider(
-            color: Colors.black12,
-          ),
-        ),
-        SizedBox(
-          height: size.height * 0.12,
-          child: ListView.builder(
-            padding: EdgeInsets.zero,
-            scrollDirection: Axis.horizontal,
-            itemCount: categoriesList.length,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.only(
-                    top: 20,
-                    right: 20,
-                    left: 20,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 32,
-                        width: 40,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: Image.network(
-                          categoriesList[index].image,
-                          color: selectedIndex == index
-                              ? Colors.black
-                              : Colors.black45,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        categoriesList[index].title,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: selectedIndex == index
-                              ? Colors.black
-                              : Colors.black45,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        height: 3,
-                        width: 50,
-                        color: selectedIndex == index
-                            ? Colors.black
-                            : Colors.transparent,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }
