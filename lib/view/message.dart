@@ -1,16 +1,16 @@
+import 'package:airbnb_app_ui/Components/my_icon_button.dart';
 import 'package:flutter/material.dart';
-import '../components/icon_button.dart';
 import '../model/message_model.dart';
 
-class Messages extends StatefulWidget {
-  const Messages({super.key});
+class MessagesScreen extends StatefulWidget {
+  const MessagesScreen({super.key});
 
   @override
-  State<Messages> createState() => _MessagesState();
+  State<MessagesScreen> createState() => _MessagesScreenState();
 }
 
-class _MessagesState extends State<Messages> {
-  List<String> messagesType = ["All", "Traveling", "Support"];
+class _MessagesScreenState extends State<MessagesScreen> {
+  List<String> messagesScreenType = ["All", "Traveling", "Support"];
   int selectedIndex = 0;
 
   @override
@@ -42,7 +42,7 @@ class _MessagesState extends State<Messages> {
               ),
               const SizedBox(height: 30),
               const Text(
-                "Messages",
+                "MessagesScreen",
                 style: TextStyle(
                   fontSize: 35,
                   fontWeight: FontWeight.bold,
@@ -53,7 +53,7 @@ class _MessagesState extends State<Messages> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: List.generate(
-                    messagesType.length,
+                    messagesScreenType.length,
                     (index) => GestureDetector(
                       onTap: () {
                         setState(() {
@@ -74,7 +74,7 @@ class _MessagesState extends State<Messages> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Text(
-                            messagesType[index],
+                            messagesScreenType[index],
                             style: TextStyle(
                               color: selectedIndex == index
                                   ? Colors.white

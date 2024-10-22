@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class StarRating extends StatefulWidget {
-  const StarRating({super.key, required this.rating});
   final double rating;
+  const StarRating({super.key, required this.rating});
 
   @override
   State<StarRating> createState() => _StarRatingState();

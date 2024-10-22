@@ -190,7 +190,7 @@ class ProfilePage extends StatelessWidget {
                   "Version 24.34 (28004615)",
                   style: TextStyle(fontSize: 10),
                 ),
-                const SizedBox(height: 100),
+                const SizedBox(height: 50),
               ],
             ),
           ),

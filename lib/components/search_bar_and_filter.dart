@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SearchBarAndFilter extends StatelessWidget {
-  const SearchBarAndFilter({
-    super.key,
-  });
+  const SearchBarAndFilter({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +20,7 @@ class SearchBarAndFilter extends StatelessWidget {
                   BoxShadow(
                     blurRadius: 7,
                     color: Colors.black38,
-                  ),
+                  )
                 ],
               ),
               child: const Padding(
@@ -43,8 +41,8 @@ class SearchBarAndFilter extends StatelessWidget {
                         Text(
                           "  Where to?",
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
                             fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         SizedBox(
@@ -55,7 +53,7 @@ class SearchBarAndFilter extends StatelessWidget {
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                               ),
-                              hintText: "Anywhere . Any week . Add guests",
+                              hintText: "Anywhere . Any wek . Add guests",
                               hintStyle: TextStyle(
                                 color: Colors.black38,
                                 fontSize: 13,
@@ -66,7 +64,7 @@ class SearchBarAndFilter extends StatelessWidget {
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -76,14 +74,16 @@ class SearchBarAndFilter extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black54),
+              border: Border.all(
+                color: Colors.black54,
+              ),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.tune,
               size: 30,
             ),
-          )
+          ),
         ],
       ),
     );

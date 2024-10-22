@@ -1,11 +1,12 @@
 import 'package:airbnb_app_ui/view/explore_screen.dart';
-import 'package:airbnb_app_ui/view/messages.dart';
+import 'package:airbnb_app_ui/view/message.dart';
 import 'package:airbnb_app_ui/view/profile_page.dart';
 import 'package:airbnb_app_ui/view/wishlists.dart';
 import 'package:flutter/material.dart';
 
 class AppMainScreen extends StatefulWidget {
   const AppMainScreen({super.key});
+
   @override
   State<AppMainScreen> createState() => _AppMainScreenState();
 }
@@ -19,8 +20,8 @@ class _AppMainScreenState extends State<AppMainScreen> {
     page = [
       const ExploreScreen(),
       const Wishlists(),
-      navBarPage(Icons.attribution),
-      const Messages(),
+      const Scaffold(),
+      const MessagesScreen(),
       const ProfilePage(),
     ];
     super.initState();
@@ -38,8 +39,8 @@ class _AppMainScreenState extends State<AppMainScreen> {
         unselectedItemColor: Colors.black45,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        currentIndex: selectedIndex,
         type: BottomNavigationBarType.fixed,
+        currentIndex: selectedIndex,
         onTap: (index) {
           setState(() {
             selectedIndex = index;
@@ -67,7 +68,7 @@ class _AppMainScreenState extends State<AppMainScreen> {
               height: 30,
               color: selectedIndex == 2 ? Colors.pinkAccent : Colors.black45,
             ),
-            label: "Trips",
+            label: "Trip",
           ),
           BottomNavigationBarItem(
             icon: Image.network(
@@ -80,24 +81,14 @@ class _AppMainScreenState extends State<AppMainScreen> {
           BottomNavigationBarItem(
             icon: Image.network(
               "https://cdn-icons-png.flaticon.com/512/1144/1144760.png",
-              color: selectedIndex == 4 ? Colors.pinkAccent : Colors.black45,
               height: 30,
+              color: selectedIndex == 4 ? Colors.pinkAccent : Colors.black45,
             ),
             label: "Profile",
           ),
         ],
       ),
       body: page[selectedIndex],
-    );
-  }
-
-  navBarPage(IconData iconName) {
-    return Center(
-      child: Icon(
-        iconName,
-        size: 100,
-        color: Colors.black,
-      ),
     );
   }
 }

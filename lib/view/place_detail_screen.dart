@@ -1,8 +1,7 @@
+import 'package:airbnb_app_ui/Components/location_in_map.dart';
+import 'package:airbnb_app_ui/Components/my_icon_button.dart';
+import 'package:airbnb_app_ui/Components/star_rating.dart';
 import 'package:airbnb_app_ui/Provider/favorite_provider.dart';
-import 'package:airbnb_app_ui/components/google_map.dart';
-import 'package:airbnb_app_ui/components/icon_button.dart';
-import 'package:airbnb_app_ui/components/star_rating.dart';
-
 import 'package:another_carousel_pro/another_carousel_pro.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +15,7 @@ class PlaceDetailScreen extends StatefulWidget {
 }
 
 class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
-  int _currentIndex = 0;
-
+  int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -25,16 +23,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        // physics: AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            imageAndIcons(size, context, provider),
+            // detail image , back button, share and favorite button
+            detailImageandIcon(size, context, provider),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 25,
-                vertical: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -42,10 +37,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     widget.place['title'],
                     maxLines: 2,
                     style: const TextStyle(
-                        fontSize: 25,
-                        height: 1.2,
-                        fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis),
+                      fontSize: 25,
+                      height: 1.2,
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   SizedBox(height: size.height * 0.02),
                   Text(
@@ -65,43 +61,43 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 ],
               ),
             ),
-            widget.place['isActive'] == true
-                ? ratingAndStar()
+            widget.place["isActive"] == true
+                ? ratingAndStarTrue()
                 : ratingAndStarFalse(),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
+            SizedBox(height: size.height * 0.02),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 25,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Divider(),
-                  propertyList(
+                  placePropertyList(
                     size,
                     "https://static.vecteezy.com/system/resources/previews/018/923/486/original/diamond-symbol-icon-png.png",
                     "This is a rare find",
                     "${widget.place['vendor']}'s place is usually fully booked.",
                   ),
                   const Divider(),
-                  propertyList(
+                  placePropertyList(
                     size,
                     widget.place['vendorProfile'],
                     "Stay with ${widget.place['vendor']}",
                     "Superhost . ${widget.place['yearOfHostin']} years hosting",
                   ),
                   const Divider(),
-                  propertyList(
+                  placePropertyList(
                       size,
                       "https://cdn-icons-png.flaticon.com/512/6192/6192020.png",
                       "Room in a rental unit",
                       "Your own room in a home, pluse access\nto shared spaces."),
-                  propertyList(
+                  placePropertyList(
                       size,
                       "https://cdn0.iconfinder.com/data/icons/co-working/512/coworking-sharing-17-512.png",
                       "Shared common spaces",
                       "You'll share parts of the home with the host,"),
-                  propertyList(
+                  placePropertyList(
                       size,
                       "https://img.pikbest.com/element_our/20230223/bg/102f90fb4dec6.png!w700wp",
                       "Shared bathroom",
@@ -116,24 +112,27 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     ),
                   ),
                   const Text(
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
                   const Divider(),
-                  SizedBox(height: size.height * 0.02),
                   const Text(
-                    "Where you'll be",
+                    "Where  you'll be",
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
                       fontSize: 22,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     widget.place['address'],
-                    style: const TextStyle(fontSize: 18),
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
                   ),
                   SizedBox(
                     height: 400,
                     width: size.width,
-                    child: GoogleMapFlutter(place: widget.place),
+                    child: LocationInMap(
+                      place: widget.place,
+                    ),
                   ),
                   const SizedBox(height: 100),
                 ],
@@ -142,18 +141,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ],
         ),
       ),
-      bottomSheet: mybottomSheet(size),
+      bottomSheet: priceAndReserve(size),
     );
   }
 
-  Container mybottomSheet(Size size) {
+  Container priceAndReserve(Size size) {
     return Container(
       height: size.height * 0.1,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(
-          color: Colors.black12,
-        ),
+        border: Border.all(color: Colors.black12),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -169,7 +166,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     color: Colors.black,
                     fontSize: 18,
                   ),
-                  children: const <TextSpan>[
+                  children: const [
                     TextSpan(
                       text: "night",
                       style: TextStyle(
@@ -191,7 +188,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               )
             ],
           ),
-          SizedBox(width: size.width * 0.3),
+          SizedBox(
+            width: size.width * 0.3,
+          ),
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 35,
@@ -215,7 +214,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
-  Padding propertyList(Size size, image, title, subtitle) {
+  Padding placePropertyList(Size size, image, title, subtitle) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15),
       child: Row(
@@ -230,64 +229,59 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             width: size.width * 0.05,
           ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w600,
-                  ),
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w600,
                 ),
-                Text(
-                  subtitle,
-                  softWrap:
-                      true, // Ensures the text wraps when it reaches the end of the available space
-                  overflow:
-                      TextOverflow.visible, // Prevents truncation or ellipsis
-                  style: TextStyle(
-                    fontSize: size.width * 0.0346,
-                    color: Colors.grey.shade700,
-                  ),
+              ),
+              Text(
+                subtitle,
+                softWrap: true,
+                overflow: TextOverflow.visible,
+                style: TextStyle(
+                  fontSize: size.width * 0.0346,
+                  color: Colors.grey.shade700,
                 ),
-              ],
-            ),
-          ),
+              )
+            ],
+          ))
         ],
       ),
     );
   }
 
-  Padding ratingAndStarFalse() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.star),
-          const SizedBox(width: 5),
-          Text(
-            "${widget.place['rating'].toString()} . ",
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
+  Padding ratingAndStarFalse() => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.star),
+            const SizedBox(width: 5),
+            Text(
+              "${widget.place['rating'].toString()} . ",
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          Text(
-            "${widget.place['review'].toString()}reviews",
-            style: const TextStyle(
-              fontSize: 17,
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.w500,
-            ),
-          )
-        ],
-      ),
-    );
-  }
+            Text(
+              "${widget.place['review'].toString()}reviews",
+              style: const TextStyle(
+                fontSize: 17,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w500,
+              ),
+            )
+          ],
+        ),
+      );
 
-  Container ratingAndStar() {
+  Container ratingAndStarTrue() {
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: 13,
@@ -311,14 +305,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               Text(
                 widget.place['rating'].toString(),
                 style: const TextStyle(
-                  height: 1,
-                  fontWeight: FontWeight.bold,
                   fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  height: 1,
                 ),
               ),
-              StarRating(
-                rating: widget.place['rating'].toDouble(),
-              )
+              StarRating(rating: widget.place['rating']),
             ],
           ),
           Stack(
@@ -334,10 +326,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 child: Text(
                   "Guest\nfavorite",
                   style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     height: 1.2,
                     color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
                   ),
                 ),
               ),
@@ -367,8 +359,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
-  Stack imageAndIcons(Size size, BuildContext context, provider) {
-    final int totalSlides = widget.place['imageUrls'].length;
+  Stack detailImageandIcon(Size size, BuildContext context, provider) {
     return Stack(
       children: [
         SizedBox(
@@ -377,11 +368,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             images: widget.place['imageUrls']
                 .map((url) => NetworkImage(url))
                 .toList(),
-            showIndicator: false, // Hide the default dot indicator
+            showIndicator: false,
             dotBgColor: Colors.transparent,
-            onImageChange: (previousIndex, currentIndex) {
+            onImageChange: (p0, p1) {
               setState(() {
-                _currentIndex = currentIndex;
+                currentIndex = p1;
               });
             },
             autoplay: true,
@@ -392,16 +383,18 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           bottom: 10,
           right: 20,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 5,
+            ),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10), color: Colors.black45),
             child: Text(
-              '${_currentIndex + 1} / $totalSlides',
+              "${currentIndex + 1} / ${widget.place['imageUrls'].length}",
               style: const TextStyle(
-                fontSize: 18.0,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color:
-                    Colors.white, // Ensure visibility on different backgrounds
+                color: Colors.white,
               ),
             ),
           ),
@@ -411,7 +404,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           left: 0,
           top: 25,
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -423,9 +416,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     icon: Icons.arrow_back_ios_new,
                   ),
                 ),
-                SizedBox(width: size.width * 0.55),
+                SizedBox(
+                  width: size.width * 0.55,
+                ),
                 const MyIconButton(icon: Icons.share_outlined),
                 const SizedBox(width: 20),
+                // after this all let's make favorite button function by using provider
                 InkWell(
                   onTap: () {
                     provider.toggleFavorite(widget.place);
@@ -438,11 +434,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         ? Colors.red
                         : Colors.black,
                   ),
-                ),
+                )
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }

@@ -1,8 +1,7 @@
+import 'package:airbnb_app_ui/Authentication/google_authentication.dart';
+import 'package:airbnb_app_ui/view/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../Authentication/google_auth.dart';
-import '../components/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,7 +11,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  int selectedIndex = 2;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -37,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.black12,
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -48,50 +46,46 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: size.height * 0.02),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    // for phone number field,
                     phoneNumberField(size),
                     const SizedBox(height: 10),
                     RichText(
                       text: const TextSpan(
                         text:
                             "We'll call or text you to conform your number. Standart message and data rates apply.  ",
-                        style: TextStyle(fontSize: 15, color: Colors.black),
-                        children: <TextSpan>[
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                        children: [
                           TextSpan(
-                            text: 'Privacy Policy',
+                            text: "Privacy Policy",
                             style: TextStyle(
-                              decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ],
                       ),
                     ),
                     SizedBox(height: size.height * 0.03),
-                    InkWell(
-                      onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (_) => const BottomNavBar(),
-                        //   ),
-                        // );
-                      },
-                      child: Container(
-                        width: size.width,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.pink,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Continue",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                    Container(
+                      width: size.width,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.pink,
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "Continue",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -117,20 +111,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 1,
                             color: Colors.black26,
                           ),
-                        )
+                        ),
                       ],
                     ),
                     SizedBox(height: size.height * 0.015),
-                    sociaIcons(
+                    socialIcons(
                       size,
                       Icons.facebook,
                       "Continue with Facebook",
                       Colors.blue,
                       30,
                     ),
-                    GestureDetector(
+                    // now let's do the google authentication parts
+// add the sha1 and sha265 key
+// after you have enable google and  Email/Password sign in,
+// you need to re download the googlservice file in both the androi and ios device and replace the old file to new file ,
+                    // after this all android setup is completed but you need to add some line for iso
+                    InkWell(
                       onTap: () async {
-                        await FirebaseServices().signInWithGoogle();
+                        await FirebaseAuthServices().signInWithGoogle();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -138,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         );
                       },
-                      child: sociaIcons(
+                      child: socialIcons(
                         size,
                         FontAwesomeIcons.google,
                         "Continue with Google",
@@ -146,14 +145,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         27,
                       ),
                     ),
-                    sociaIcons(
+                    socialIcons(
                       size,
                       Icons.apple,
                       "Continue with Apple",
                       Colors.black,
                       30,
                     ),
-                    sociaIcons(
+                    socialIcons(
                       size,
                       Icons.email_outlined,
                       "Continue with email",
@@ -165,9 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         "Need help?",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                        ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -175,60 +176,39 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      // bottomNavigationBar: Container(
-      //   decoration: BoxDecoration(
-      //     border: Border.all(
-      //       color: Colors.black12,
-      //     ),
-      //   ),
-      //   child: Padding(
-      //     padding: const EdgeInsets.symmetric(horizontal: 30),
-      //     child: BottomNavigationBar(
-      //       backgroundColor: Colors.white,
-      //       iconSize: 30,
-      //       elevation: 0,
-      //       selectedItemColor: Colors.black,
-      //       unselectedItemColor: Colors.black45,
-      //       selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-      //       unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-      //       currentIndex: selectedIndex,
-      //       type: BottomNavigationBarType.fixed,
-      //       onTap: (index) {
-      //         setState(() {
-      //           selectedIndex = index;
-      //         });
-      //       },
-      //       items: [
-      //         BottomNavigationBarItem(
-      //           icon: Image.network(
-      //             "https://cdn3.iconfinder.com/data/icons/feather-5/24/search-512.png",
-      //             height: 30,
-      //             color:
-      //                 selectedIndex == 0 ? Colors.pinkAccent : Colors.black45,
-      //           ),
-      //           label: "Explore",
-      //         ),
-      //         BottomNavigationBarItem(
-      //           icon: Icon(
-      //             Icons.favorite_border,
-      //             color:
-      //                 selectedIndex == 1 ? Colors.pinkAccent : Colors.black45,
-      //           ),
-      //           label: "Wishlist",
-      //         ),
-      //         BottomNavigationBarItem(
-      //           icon: Image.network(
-      //             "https://cdn-icons-png.flaticon.com/512/1144/1144760.png",
-      //             color:
-      //                 selectedIndex == 2 ? Colors.pinkAccent : Colors.black45,
-      //             height: 30,
-      //           ),
-      //           label: "Profile",
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
+    );
+  }
+
+  Padding socialIcons(Size size, icon, name, color, double iconSize) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Container(
+        width: size.width,
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(),
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: size.width * 0.05),
+            Icon(
+              icon,
+              color: color,
+              size: iconSize,
+            ),
+            SizedBox(width: size.width * 0.18),
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
+        ),
+      ),
     );
   }
 
@@ -237,14 +217,20 @@ class _LoginScreenState extends State<LoginScreen> {
       width: size.width,
       height: 130,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black38),
+        border: Border.all(
+          color: Colors.black45,
+        ),
         borderRadius: BorderRadius.circular(10),
       ),
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(right: 10, left: 10, top: 8),
+            padding: EdgeInsets.only(
+              right: 10,
+              left: 10,
+              top: 8,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -267,9 +253,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Icon(
                       Icons.keyboard_arrow_down_sharp,
                       size: 30,
-                    )
+                    ),
                   ],
-                ),
+                )
               ],
             ),
           ),
@@ -288,40 +274,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Padding sociaIcons(Size size, icon, name, color, double iconSize) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: Container(
-        width: size.width,
-        padding: const EdgeInsets.symmetric(vertical: 11),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(width: size.width * 0.05),
-            Icon(
-              icon,
-              color: color,
-              size: iconSize,
-            ),
-            SizedBox(width: size.width * 0.18),
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(width: 10),
-          ],
-        ),
       ),
     );
   }

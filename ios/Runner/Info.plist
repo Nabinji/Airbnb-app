@@ -44,7 +44,7 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+	<true/> 
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

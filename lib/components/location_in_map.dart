@@ -2,40 +2,40 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class GoogleMapFlutter extends StatefulWidget {
+class LocationInMap extends StatefulWidget {
   final DocumentSnapshot<Object?> place;
-  const GoogleMapFlutter({super.key, required this.place});
+  const LocationInMap({
+    super.key,
+    required this.place,
+  });
 
   @override
-  State<GoogleMapFlutter> createState() => _GoogleMapFlutterState();
+  State<LocationInMap> createState() => _LocationInMapState();
 }
 
-class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
-  // Initial location for the map's camera position (latitude and longitude)
-  // LatLng myCurrentLocation = const LatLng(w, 85.3240);
-  // LatLng myCurrentLocation = const LatLng(28.578382, 81.63359);
-
+class _LocationInMapState extends State<LocationInMap> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      
       myLocationButtonEnabled: false,
       markers: {
         Marker(
-          markerId: MarkerId(widget.place['address']),
+          markerId: MarkerId(
+            widget.place['address'],
+          ),
           position: LatLng(
             widget.place['latitude'],
             widget.place['longitude'],
           ),
-        )
+        ),
       },
-
-      // Initial camera position of the map
       initialCameraPosition: CameraPosition(
         target: LatLng(
           widget.place['latitude'],
           widget.place['longitude'],
         ),
-        zoom: 13,
+        zoom: 11
       ),
     );
   }

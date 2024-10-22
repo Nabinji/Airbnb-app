@@ -1,60 +1,66 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FavoriteProvider extends ChangeNotifier {
+  // we hae also save the favorite items in firebase and display it in nex time
+  // it is not loast until user remove from favoite
   List<String> _favoriteIds = [];
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   List<String> get favorites => _favoriteIds;
-
+  
   FavoriteProvider() {
-    loadFavorites();
+    loadFavorite();
   }
+
   // toggle favorites states
-  void toggleFavorite(DocumentSnapshot product) async {
-    String productId = product.id;
-    if (_favoriteIds.contains(productId)) {
-      _favoriteIds.remove(productId);
-      await _removeFavorite(productId); // remove from favorite
+  void toggleFavorite(DocumentSnapshot place) async {
+    String placeId = place.id;
+    if (_favoriteIds.contains(placeId)) {
+      _favoriteIds.remove(placeId);
+      await _removeFavorite(placeId); // remove grom favorite
     } else {
-      _favoriteIds.add(productId);
-      await _addFavorite(productId); // add to favorite
+      _favoriteIds.add(placeId);
+      await _addFavorites(placeId); // add to favorite
     }
     notifyListeners();
   }
 
-  // chek if a product is favorited
-  bool isExist(DocumentSnapshot prouct) {
-    return _favoriteIds.contains(prouct.id);
+  // check if a place is afavorited
+  bool isExist(DocumentSnapshot place) {
+    return _favoriteIds.contains(place.id);
   }
 
-  // add favorites to firestore
-  Future<void> _addFavorite(String productId) async {
+  // add favorites items to firestore
+  Future<void> _addFavorites(String placeId) async {
     try {
-      await _firestore.collection("userFavorite").doc(productId).set({
-        'isFavorite':
-            true, // create the userFavorite collection and add item as favorites inf firestore
-      });
+      // create the userFavorite collection and add items as favorites in firestore
+      await firebaseFirestore
+          .collection("userFavorites")
+          .doc(placeId)
+          .set({'isFavorite': true});
     } catch (e) {
       print(e.toString());
     }
   }
 
-  // Remove favorite from firestore
-  Future<void> _removeFavorite(String productId) async {
+  // remove favorites items from friestore
+  Future<void> _removeFavorite(String placeId) async {
     try {
-      await _firestore.collection("userFavorite").doc(productId).delete();
+      // create the userFavorite collection and add items as favorites in firestore
+      await firebaseFirestore.collection("userFavorites").doc(placeId).delete();
     } catch (e) {
       print(e.toString());
     }
   }
 
-  // load favories from firestore (store favorite or not)
-  Future<void> loadFavorites() async {
+  // load favorites itesm from firestore (if user make some items favorite then load this items)
+  Future<void> loadFavorite() async {
     try {
       QuerySnapshot snapshot =
-          await _firestore.collection("userFavorite").get();
+          await firebaseFirestore.collection("userFavorites").get();
       _favoriteIds = snapshot.docs.map((doc) => doc.id).toList();
     } catch (e) {
       print(e.toString());

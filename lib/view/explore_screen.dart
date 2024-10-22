@@ -1,10 +1,9 @@
-import 'package:airbnb_app_ui/Provider/favorite_provider.dart';
-import 'package:airbnb_app_ui/components/map_with_custon_info_windows.dart';
-import 'package:another_carousel_pro/another_carousel_pro.dart';
+import 'package:airbnb_app_ui/Components/display_place.dart';
+import 'package:airbnb_app_ui/Components/display_total_price.dart';
+import 'package:airbnb_app_ui/Components/map_with_custom_info_windows.dart';
+import 'package:airbnb_app_ui/Components/search_bar_and_filter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:airbnb_app_ui/view/place_detail_screen.dart';
-import '../components/search_bar.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -14,270 +13,51 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  int selectedIndex = 0;
-  bool _isSwitched = false;
-  // collection for place detail
-  final CollectionReference placeCollection =
-      FirebaseFirestore.instance.collection("myAppCpollection");
   // collection for category
   final CollectionReference categoryCollection =
       FirebaseFirestore.instance.collection("AppCategory");
 
+  int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final provider = FavoriteProvider.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
+            // for search bar and filter button
             const SearchBarAndFilter(),
+            // let's fetch list of category items from firebase.
             listOfCategoryItems(size),
-            Expanded(
-              child: SizedBox(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      displayTotalPrice(),
-                      const SizedBox(height: 15),
-                      StreamBuilder(
-                        stream: placeCollection.snapshots(),
-                        builder: (context, streamSnaphot) {
-                          if (streamSnaphot.hasData) {
-                            return ListView.builder(
-                              padding: EdgeInsets.zero,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: streamSnaphot.data!.docs.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                final place = streamSnaphot.data!.docs[index];
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              PlaceDetailScreen(place: place),
-                                        ),
-                                      );
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              child: SizedBox(
-                                                height: 360,
-                                                width: double.infinity,
-                                                child: AnotherCarousel(
-                                                  images: place['imageUrls']
-                                                      .map((url) =>
-                                                          NetworkImage(url))
-                                                      .toList(),
-                                                  dotSize: 6,
-                                                  indicatorBgPadding: 5.0,
-                                                  dotBgColor:
-                                                      Colors.transparent,
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: 20,
-                                              left: 15,
-                                              right: 15,
-                                              child: Row(
-                                                children: [
-                                                  place['isActive'] == true
-                                                      ? Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                              40,
-                                                            ),
-                                                          ),
-                                                          child: const Padding(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                              horizontal: 15,
-                                                              vertical: 5,
-                                                            ),
-                                                            child: Text(
-                                                              "Guest favorite",
-                                                              style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        )
-                                                      : SizedBox(
-                                                          width:
-                                                              size.width * 0.3,
-                                                        ),
-                                                  const Spacer(),
-                                                  Stack(
-                                                    alignment: Alignment.center,
-                                                    children: [
-                                                      // White border
-                                                      const Icon(
-                                                        Icons
-                                                            .favorite_outline_rounded,
-                                                        size: 34.0,
-                                                        color: Colors.white,
-                                                      ),
-                                                      InkWell(
-                                                        onTap: () {
-                                                          provider
-                                                              .toggleFavorite(
-                                                            place,
-                                                          );
-                                                        },
-                                                        child: Icon(
-                                                          Icons.favorite,
-                                                          size: 30.0,
-                                                          color: provider
-                                                                  .isExist(
-                                                            place,
-                                                          )
-                                                              ? Colors.red
-                                                              : Colors.black54,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            vendorProfile(place)
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.01),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              place['address'],
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            const Spacer(),
-                                            const Icon(Icons.star),
-                                            const SizedBox(width: 5),
-                                            Text(
-                                              place['rating'].toString(),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          "Stay with ${place['vendor']} . ${place['vendorProfession']}",
-                                          style: const TextStyle(
-                                            color: Colors.black54,
-                                            fontSize: 16.5,
-                                          ),
-                                        ),
-                                        Text(
-                                          place['date'],
-                                          style: const TextStyle(
-                                            fontSize: 16.5,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                        SizedBox(height: size.height * 0.007),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: "\$${place['price']} ",
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                            ),
-                                            children: const <TextSpan>[
-                                              TextSpan(
-                                                text: "night",
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(height: size.height * 0.04),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+            const Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                   // for switch button
+                    DisplayTotalPrice(),
+                    SizedBox(height: 15),
+                    // displat the place items
+                    DisplayPlace(),
+                  
+                  ],
                 ),
               ),
             ),
           ],
         ),
       ),
+      // for google map
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: const MapWithCustonInfoWindows(),
-    );
-  }
-
-  Positioned vendorProfile(QueryDocumentSnapshot<Object?> place) {
-    return Positioned(
-      bottom: 11,
-      left: 10,
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(15),
-              bottomRight: Radius.circular(15),
-            ),
-            child: Image.asset(
-              "asset/images/book_cover.png",
-              height: 60,
-              width: 60,
-              fit: BoxFit.fill,
-            ),
-          ),
-          Positioned(
-            top: 10,
-            left: 10,
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(place['vendorProfile']),
-            ),
-          )
-        ],
-      ),
+      floatingActionButton: const MapWithCustomInfoWindows(),
     );
   }
 
   StreamBuilder<QuerySnapshot<Object?>> listOfCategoryItems(Size size) {
     return StreamBuilder(
       stream: categoryCollection.snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+      builder: (context, streamSnapshot) {
         if (streamSnapshot.hasData) {
           return Stack(
             children: [
@@ -344,7 +124,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               color: selectedIndex == index
                                   ? Colors.black
                                   : Colors.transparent,
-                            ),
+                            )
                           ],
                         ),
                       ),
@@ -359,60 +139,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
           child: CircularProgressIndicator(),
         );
       },
-    );
-  }
-
-  Padding displayTotalPrice() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(
-            color: Colors.black26,
-          ),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Display total price",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 17,
-                    ),
-                  ),
-                  Text(
-                    "Includes all fees, before taxes",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-              Switch(
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: Colors.grey,
-                value: _isSwitched,
-                onChanged: (value) {
-                  setState(
-                    () {
-                      _isSwitched = value;
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
