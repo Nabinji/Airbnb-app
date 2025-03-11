@@ -1,0 +1,2 @@
+/Users/adventure/airbnb_app_ui/android/app/.cxx/Debug/5k363p02/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/adventure/airbnb_app_ui/android/app/.cxx/Debug/5k363p02/arm64-v8a/CMakeFiles/rebuild_cache.dir
